@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('trickyButton');
     const container = document.querySelector('.container');
     let isMoving = false;
-
+    
     function moveButtonAway(e) {
         if (isMoving) return;
 
@@ -13,18 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (dist < 200) {  // Trigger when the mouse/finger is within 200px
             const angle = Math.atan2(e.clientY - buttonY, e.clientX - buttonX);
-            const moveDistance = 300; // Distance the button should move away
-            let offsetX = rect.left - Math.cos(angle) * moveDistance;
-            let offsetY = rect.top - Math.sin(angle) * moveDistance;
+            const moveDistance = 200; // Distance the button should move away
+            let offsetX = buttonX + Math.cos(angle) * moveDistance;
+            let offsetY = buttonY + Math.sin(angle) * moveDistance;
 
             // Bounce off the edges
-            if (offsetX < 0) offsetX = 0;
-            if (offsetX + rect.width > window.innerWidth) offsetX = window.innerWidth - rect.width;
-            if (offsetY < 0) offsetY = 0;
-            if (offsetY + rect.height > window.innerHeight) offsetY = window.innerHeight - rect.height;
+            const containerRect = container.getBoundingClientRect();
+            const maxX = containerRect.width - rect.width;
+            const maxY = containerRect.height - rect.height;
+
+            if (offsetX < containerRect.left) offsetX = containerRect.left;
+            if (offsetX > containerRect.right - rect.width) offsetX = containerRect.right - rect.width;
+            if (offsetY < containerRect.top) offsetY = containerRect.top;
+            if (offsetY > containerRect.bottom - rect.height) offsetY = containerRect.bottom - rect.height;
 
             button.style.transition = "transform 0.5s ease-out";
-            button.style.transform = `translate(${offsetX - rect.left}px, ${offsetY - rect.top}px)`;
+            button.style.transform = `translate(${offsetX - buttonX}px, ${offsetY - buttonY}px)`;
 
             isMoving = true;
 
